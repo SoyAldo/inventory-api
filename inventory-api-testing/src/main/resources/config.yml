@@ -1,0 +1,25 @@
+inventories:
+  example:
+    title: "Example title"
+    rows: 3
+    items:
+      red_panel:
+        material: "RED_STAINED_GLASS_PANEL"
+        slots: [ "0-26" ]
+      message:
+        material: "PAPER"
+        slot: 10
+        leftClickActions:
+          - "[message] &aMessage found"
+
+
+messages:
+  onlyPlayers: "&cOnly players can be execute this command."
+  emptyArgs: "&cThe sub command is empty."
+  invalidArgs: "&cThe sub command is invalid."
+  reloaded: "&aReloaded."
+  emptyInventoryName: "&cThe inventory name is empty."
+  invalidInventoryName: "&cThe inventory name is invalid or not exist."
+  inventoryRegistered: "&aThe inventory has been registered."
+  inventoryUnregistered: "&aThe inventory has been unregistered."
+  inventoryOpened: "&aThe inventory has been opened."

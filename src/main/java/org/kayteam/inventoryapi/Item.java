@@ -47,13 +47,21 @@ public class Item {
 
     public Item( ItemStack itemStack ) {
 
-        this.itemStack = itemStack;
+        if ( itemStack != null ) {
 
-        ItemMeta itemMeta = itemStack.getItemMeta();
+            this.itemStack = itemStack;
 
-        if ( itemMeta.hasDisplayName() ) displayName = itemMeta.getDisplayName();
+            ItemMeta itemMeta = itemStack.getItemMeta();
 
-        if ( itemMeta.hasLore() ) lore = itemMeta.getLore();
+            if ( itemMeta != null ) {
+
+                if ( itemMeta.hasDisplayName() ) displayName = itemMeta.getDisplayName();
+
+                if ( itemMeta.hasLore() ) lore = itemMeta.getLore();
+
+            }
+
+        }
 
     }
 

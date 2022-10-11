@@ -63,6 +63,10 @@
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -71,6 +75,11 @@
             <artifactId>spigot-api</artifactId>
             <version>1.13-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.SoyAldo</groupId>
+            <artifactId>inventory-api</artifactId>
+            <version>66c3b7afd0</version>
         </dependency>
     </dependencies>
 </project>
