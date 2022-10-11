@@ -1,6 +1,7 @@
 package org.kayteam.inventoryapi;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -25,7 +26,13 @@ public class Item {
 
     public Item( ItemStack itemStack , String displayName , List<String> lore ) {
 
+        priority = 0;
+
+        update = false;
+
         this.itemStack = itemStack;
+
+        if ( this.itemStack == null )   this.itemStack = new ItemStack( Material.AIR );
 
         this.displayName = displayName;
 
@@ -35,21 +42,53 @@ public class Item {
 
     public Item( ItemStack itemStack , String displayName ) {
 
+        priority = 0;
+
+        update = false;
+
         this.itemStack = itemStack;
 
-        this.displayName = displayName;
+        if ( this.itemStack == null ) {
 
-        ItemMeta itemMeta = itemStack.getItemMeta();
+            this.itemStack = new ItemStack( Material.AIR );
 
-        if ( itemMeta.hasLore() ) lore = itemMeta.getLore();
+            this.displayName = displayName;
+
+            lore = new ArrayList<>();
+
+        } else {
+
+            ItemMeta itemMeta = itemStack.getItemMeta();
+
+            if ( itemMeta != null ) {
+
+                this.displayName = displayName;
+
+                if ( itemMeta.hasLore() ) lore = itemMeta.getLore();
+
+            }
+
+        }
 
     }
 
     public Item( ItemStack itemStack ) {
 
-        if ( itemStack != null ) {
+        priority = 0;
 
-            this.itemStack = itemStack;
+        update = false;
+
+        this.itemStack = itemStack;
+
+        if ( this.itemStack == null ) {
+
+            this.itemStack = new ItemStack( Material.AIR );
+
+            displayName = "";
+
+            lore = new ArrayList<>();
+
+        } else {
 
             ItemMeta itemMeta = itemStack.getItemMeta();
 

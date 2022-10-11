@@ -257,15 +257,13 @@ public class InventoryView {
 
             }
 
-            if ( result != null ) {
+            if ( result == null )   continue;
 
-                visibleSlot.getItems().add( result );
+            visibleSlot.getItems().add( result );
 
-                visibleSlots.put( slot.getSlot() , visibleSlot );
+            visibleSlots.put( slot.getSlot() , visibleSlot );
 
-                inventory.setItem( slot.getSlot() , visibleSlot.getItems().get(0).getItemStack() );
-
-            }
+            inventory.setItem( slot.getSlot() , visibleSlot.getItems().get(0).getItemStack() );
 
         }
 

@@ -47,11 +47,11 @@ public class InventoryClickListener implements Listener {
 
         ClickActions clickActions = item.getClickActions().get( clickType );
 
-        if ( clickActions.getRequirements().verifyAll( player ) ) {
+        if ( clickActions == null )   return;
 
-            clickActions.getActions().executeAll( player );
+        if ( ! clickActions.getRequirements().verifyAll( player ) )   return;
 
-        }
+        clickActions.getActions().executeAll( player );
 
     }
 
