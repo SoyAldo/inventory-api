@@ -26,6 +26,13 @@ public class Inventory {
         openRequirements = new Requirements();
         openActions = new Actions();
         slots = new HashMap<>();
+
+        for ( int slot = 0 ; slot < ( rows * 9 ) ; slot++ ) {
+
+            slots.put( slot , new Slot( slot ) );
+
+        }
+
     }
 
     public Inventory( String name , String title , int rows ) {
@@ -36,6 +43,13 @@ public class Inventory {
         openRequirements = new Requirements();
         openActions = new Actions();
         slots = new HashMap<>();
+
+        for ( int slot = 0 ; slot < ( rows * 9 ) ; slot++ ) {
+
+            slots.put( slot , new Slot( slot ) );
+
+        }
+
     }
 
     /**

@@ -79,7 +79,7 @@
         <dependency>
             <groupId>com.github.SoyAldo</groupId>
             <artifactId>inventory-api</artifactId>
-            <version>66c3b7afd0</version>
+            <version>711d644e7d</version>
         </dependency>
     </dependencies>
 </project>
