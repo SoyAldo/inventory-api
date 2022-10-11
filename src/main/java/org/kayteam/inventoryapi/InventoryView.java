@@ -251,6 +251,8 @@ public class InventoryView {
 
                     result = item;
 
+                    Bukkit.getLogger().info( result.getItemStack().toString() );
+
                     break;
 
                 }
