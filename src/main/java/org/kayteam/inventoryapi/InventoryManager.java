@@ -1,5 +1,6 @@
 package org.kayteam.inventoryapi;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -356,6 +357,8 @@ public class InventoryManager {
             if ( ! slots.isEmpty() ) {
 
                 Item item = new Item( MinecraftUtil.getItemStack( itemSection ) );
+
+                Bukkit.getLogger().info( "Item: " + item.getItemStack().toString() );
 
                 item.setViewRequirements( getRequirements( "viewRequirements" , itemSection ) );
 
