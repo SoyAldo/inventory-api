@@ -1,0 +1,20 @@
+name:
+  title: "Example title"
+  rows: 6 # 1-6
+  updateInterval: 1 # In seconds, default is 0
+
+  # Requirements format
+  # If you don't know, can read the wiki here: https://github.com/SoyAldo/requirement-api/wiki
+  openRequirements:
+    requirements:
+      has permission:
+        type: "has permission"
+        permission: "your.permission.node"
+    denyActions:
+      - "[sound] ENTITY_VILLAGER_NO"
+      - "[message] &cSorry you don't open the example menu."
+
+  # Actions format
+  # If you don't know, can read the wiki here: https://github.com/SoyAldo/action-api/wiki
+  openActions:
+    - "[sound] ENTITY_PLAYER_LEVELUP"
