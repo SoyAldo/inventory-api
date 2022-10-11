@@ -263,6 +263,8 @@ public class InventoryView {
 
                 visibleSlots.put( slot.getSlot() , visibleSlot );
 
+                inventory.setItem( slot.getSlot() , visibleSlot.getItems().get(0).getItemStack() );
+
             }
 
         }
