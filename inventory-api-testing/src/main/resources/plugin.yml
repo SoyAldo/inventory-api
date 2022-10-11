@@ -1,0 +1,8 @@
+name: Inventory Api Testing
+version: '${project.version}'
+main: org.kayteam.inventoryapitesting.InventoryApiTesting
+api-version: 1.13
+softdepend: [ PlaceholderAPI ]
+authors: [ SoyAldo ]
+description: Inventory API test plugin
+website: https://kayteam.org
