@@ -33,7 +33,7 @@ dependencies {
 Check the last released version in Releases section
 
 ## TODO
-✘ `?`.
+✘ `Wiki`.
 
 ## How to use
 https://github.com/SoyAldo/inventory-api/wiki
