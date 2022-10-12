@@ -380,7 +380,7 @@ public class InventoryManager {
 
                 item.getClickActions().put( ClickType.SHIFT_RIGHT , getClickActions( "shiftRightClick", ClickType.LEFT , itemSection ) );
 
-                for ( int slotNumber = 0 ; slotNumber < slots.size() ; slotNumber++ ) {
+                for ( Integer slotNumber : slots ) {
 
                     Slot slot = inventory.getSlots().get( slotNumber );
 
