@@ -43,15 +43,7 @@ public class Slot {
      */
     public void addItem( Item item ) {
 
-        if ( ! items.isEmpty() ) {
-
-            if ( item.getPriority() < 0 ) {
-
-                item.setPriority( items.size() );
-
-            }
-
-        }
+        if ( item.getPriority() == -1 )   item.setPriority( 2147483647 - items.size() );
 
         items.add( item );
 
