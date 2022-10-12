@@ -38,6 +38,26 @@ public class Slot {
     }
 
     /**
+     * Add item
+     * @param item The item
+     */
+    public void addItem( Item item ) {
+
+        if ( ! items.isEmpty() ) {
+
+            if ( item.getPriority() < 0 ) {
+
+                item.setPriority( items.size() );
+
+            }
+
+        }
+
+        items.add( item );
+
+    }
+
+    /**
      * Sort the items with the priority
      */
     public void sortItems() {

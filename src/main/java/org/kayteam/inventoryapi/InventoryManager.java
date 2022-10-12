@@ -358,7 +358,15 @@ public class InventoryManager {
 
                 Item item = new Item( MinecraftUtil.getItemStack( itemSection ) );
 
-                Bukkit.getLogger().info( "Item: " + item.getItemStack().toString() );
+                if ( itemSection.contains( "priority" ) ) {
+
+                    if ( itemSection.isInt( "priority" ) ) {
+
+                        item.setPriority( itemSection.getInt( "priority" ) );
+
+                    }
+
+                }
 
                 item.setViewRequirements( getRequirements( "viewRequirements" , itemSection ) );
 
@@ -372,9 +380,11 @@ public class InventoryManager {
 
                 item.getClickActions().put( ClickType.SHIFT_RIGHT , getClickActions( "shiftRightClick", ClickType.LEFT , itemSection ) );
 
-                for ( int slot = 0 ; slot < slots.size() ; slot++ ) {
+                for ( int slotNumber = 0 ; slotNumber < slots.size() ; slotNumber++ ) {
 
-                    inventory.getSlots().get( slot ).getItems().add( item );
+                    Slot slot = inventory.getSlots().get( slotNumber );
+
+                    slot.addItem( item );
 
                 }
 

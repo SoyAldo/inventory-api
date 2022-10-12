@@ -26,7 +26,7 @@ public class Item {
 
     public Item( ItemStack itemStack , String displayName , List<String> lore ) {
 
-        priority = 0;
+        priority = 2147483647;
 
         update = false;
 
@@ -42,7 +42,7 @@ public class Item {
 
     public Item( ItemStack itemStack , String displayName ) {
 
-        priority = 0;
+        priority = 2147483647;
 
         update = false;
 
@@ -74,7 +74,7 @@ public class Item {
 
     public Item( ItemStack itemStack ) {
 
-        priority = 0;
+        priority = 2147483647;
 
         update = false;
 

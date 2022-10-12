@@ -251,8 +251,6 @@ public class InventoryView {
 
                     result = item;
 
-                    Bukkit.getLogger().info( result.getItemStack().toString() );
-
                     break;
 
                 }
@@ -265,8 +263,6 @@ public class InventoryView {
 
             visibleSlots.put( slot.getSlot() , visibleSlot );
 
-            inventory.setItem( slot.getSlot() , visibleSlot.getItems().get(0).getItemStack() );
-
         }
 
         if ( updateInterval > 0 ) {
@@ -278,6 +274,14 @@ public class InventoryView {
         }
 
         openActions.executeAll( player );
+
+        for ( Slot visibleSlot : visibleSlots.values() ) {
+
+            visibleSlot.sortItems();
+
+            inventory.setItem( visibleSlot.getSlot() , visibleSlot.getItems().get(0).getItemStack() );
+
+        }
 
         player.openInventory( inventory );
 
