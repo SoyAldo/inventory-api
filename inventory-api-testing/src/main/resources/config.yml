@@ -1,16 +1,25 @@
 inventories:
   example:
     title: "Example title"
-    rows: 3
+    rows: 5
     items:
-      red_panel:
-        material: "RED_STAINED_GLASS_PANEL"
+      gray_panel:
+        material: "GRAY_STAINED_GLASS_PANE"
         slots: [ "0-26" ]
+      red_panel:
+        material: "RED_STAINED_GLASS_PANE"
+        slots: [ "28-34" ]
       message:
         material: "PAPER"
         slot: 10
         leftClickActions:
           - "[message] &aMessage found"
+      close:
+        material: "PAPER"
+        slot: 31
+        displayName: "&4&lClose"
+        leftClickActions:
+          - "[sound] BLOCK_CHEST_CLOSE"
 
 
 messages:

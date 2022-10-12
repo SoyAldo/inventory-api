@@ -277,6 +277,8 @@ public class InventoryView {
 
         for ( Slot visibleSlot : visibleSlots.values() ) {
 
+            if ( visibleSlot.getItems().isEmpty() )   continue;
+
             visibleSlot.sortItems();
 
             inventory.setItem( visibleSlot.getSlot() , visibleSlot.getItems().get(0).getItemStack() );
