@@ -292,7 +292,9 @@ public class InventoryView {
 
             visibleSlot.sortItems();
 
-            inventory.setItem( visibleSlot.getSlot() , visibleSlot.getItems().get(0).getItemStack() );
+            Item visibleItem = visibleSlot.getItems().get( 0 );
+
+            inventory.setItem( visibleSlot.getSlot() , visibleItem.getItemStack() );
 
         }
 

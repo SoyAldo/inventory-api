@@ -1,6 +1,5 @@
 package org.kayteam.inventoryapi;
 
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -11,7 +10,9 @@ import org.kayteam.actionapi.Actions;
 import org.kayteam.inventoryapi.actions.CloseExpansion;
 import org.kayteam.inventoryapi.listeners.InventoryClickListener;
 import org.kayteam.inventoryapi.listeners.InventoryCloseListener;
+import org.kayteam.inventoryapi.listeners.PlayerJoinListener;
 import org.kayteam.inventoryapi.listeners.PlayerQuitListener;
+import org.kayteam.inventoryapi.pagination.Pagination;
 import org.kayteam.inventoryapi.util.InventoryUtil;
 import org.kayteam.inventoryapi.util.MinecraftUtil;
 import org.kayteam.requirementapi.RequirementManager;
@@ -23,6 +24,7 @@ public class InventoryManager {
 
     private final HashMap< String , Inventory > registeredInventories = new HashMap<>();
     private final HashMap< UUID , InventoryView > openedInventories = new HashMap<>();
+    private final HashMap< String , Pagination > paginations = new HashMap<>();
     private final RequirementManager requirementManager;
     private final ActionManager actionManager;
     private final JavaPlugin javaPlugin;
@@ -54,6 +56,16 @@ public class InventoryManager {
     public HashMap<UUID, InventoryView> getOpenedInventories() {
 
         return openedInventories;
+
+    }
+
+    /**
+     * Get paginations
+     * @return All paginations map
+     */
+    public HashMap<String, Pagination> getPaginations() {
+
+        return paginations;
 
     }
 
@@ -91,6 +103,8 @@ public class InventoryManager {
         javaPlugin.getServer().getPluginManager().registerEvents( new InventoryClickListener( this ) , javaPlugin);
 
         javaPlugin.getServer().getPluginManager().registerEvents( new InventoryCloseListener( this ) , javaPlugin);
+
+        javaPlugin.getServer().getPluginManager().registerEvents( new PlayerJoinListener( this ) , javaPlugin);
 
         javaPlugin.getServer().getPluginManager().registerEvents( new PlayerQuitListener( this ) , javaPlugin);
 
@@ -275,6 +289,48 @@ public class InventoryManager {
     public InventoryView getOpenedInventory( UUID uuid ) {
 
         return openedInventories.get( uuid );
+
+    }
+
+    /**
+     * Verify if specific pagination exist
+     * @param name The pagination name
+     * @return true if exist or false if not
+     */
+    public boolean existPagination( String name ) {
+
+        return paginations.containsKey( name );
+
+    }
+
+    /**
+     * Add new pagination
+     * @param pagination The new pagination
+     */
+    public void addPagination( Pagination pagination ) {
+
+        paginations.put( pagination.getName() , pagination );
+
+    }
+
+    /**
+     * Remove specific pagination
+     * @param name The pagination name
+     */
+    public void removePagination( String name ) {
+
+        paginations.remove( name );
+
+    }
+
+    /**
+     * Get specific pagination
+     * @param name The pagination name
+     * @return The pagination if exist or null if not exist
+     */
+    public Pagination getPagination( String name ) {
+
+        return paginations.get( name );
 
     }
 
