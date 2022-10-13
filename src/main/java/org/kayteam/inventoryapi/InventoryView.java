@@ -2,10 +2,15 @@ package org.kayteam.inventoryapi;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.kayteam.actionapi.Actions;
+import org.kayteam.inventoryapi.events.InventoryOpenEvent;
+import org.kayteam.inventoryapi.util.PlaceholderAPIUtil;
 import org.kayteam.requirementapi.Requirements;
 
 import java.util.HashMap;
@@ -231,7 +236,13 @@ public class InventoryView {
 
         if ( ! openRequirements.verifyAll( player ) )   return;
 
-        inventory = Bukkit.createInventory( null , rows * 9 , ChatColor.translateAlternateColorCodes( '&' , title ) );
+        String realTitle = title;
+
+        realTitle = PlaceholderAPIUtil.setPlaceholders( player , realTitle );
+
+        realTitle = ChatColor.translateAlternateColorCodes( '&' , realTitle );
+
+        inventory = Bukkit.createInventory( null , rows * 9 , realTitle );
 
         for ( Slot slot : slots.values() ) {
 
@@ -284,6 +295,18 @@ public class InventoryView {
             inventory.setItem( visibleSlot.getSlot() , visibleSlot.getItems().get(0).getItemStack() );
 
         }
+
+        JavaPlugin javaPlugin = inventoryManager.getJavaPlugin();
+
+        InventoryOpenEvent inventoryOpenEvent = new InventoryOpenEvent( inventoryManager , this , player );
+
+        Server server = javaPlugin.getServer();
+
+        PluginManager pluginManager = server.getPluginManager();
+
+        pluginManager.callEvent( inventoryOpenEvent );
+
+        if ( inventoryOpenEvent.isCancelled() )  return;
 
         player.openInventory( inventory );
 
