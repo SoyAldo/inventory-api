@@ -13,6 +13,8 @@ import org.kayteam.inventoryapi.listeners.InventoryCloseListener;
 import org.kayteam.inventoryapi.listeners.PlayerJoinListener;
 import org.kayteam.inventoryapi.listeners.PlayerQuitListener;
 import org.kayteam.inventoryapi.pagination.Pagination;
+import org.kayteam.inventoryapi.pagination.paginations.OfflinePlayersPagination;
+import org.kayteam.inventoryapi.pagination.paginations.PlayersPagination;
 import org.kayteam.inventoryapi.util.InventoryUtil;
 import org.kayteam.inventoryapi.util.MinecraftUtil;
 import org.kayteam.requirementapi.RequirementManager;
@@ -94,19 +96,22 @@ public class InventoryManager {
      */
     public void registerManager() {
 
+        // Managers
         requirementManager.registerManager();
-
         actionManager.registerManager();
 
+        // Actions
         actionManager.addActionExpansion( new CloseExpansion() );
 
+        // Listeners
         javaPlugin.getServer().getPluginManager().registerEvents( new InventoryClickListener( this ) , javaPlugin);
-
         javaPlugin.getServer().getPluginManager().registerEvents( new InventoryCloseListener( this ) , javaPlugin);
-
         javaPlugin.getServer().getPluginManager().registerEvents( new PlayerJoinListener( this ) , javaPlugin);
-
         javaPlugin.getServer().getPluginManager().registerEvents( new PlayerQuitListener( this ) , javaPlugin);
+
+        // Paginations
+        paginations.put( "players" , new PlayersPagination() );
+        paginations.put( "offlinePlayers" , new OfflinePlayersPagination() );
 
     }
 
@@ -115,8 +120,8 @@ public class InventoryManager {
      */
     public void reloadManager() {
 
+        // Managers
         requirementManager.reloadManager();
-
         actionManager.reloadManager();
 
     }

@@ -5,16 +5,53 @@ name:
 
   # Requirements format
   # If you don't know, can read the wiki here: https://github.com/SoyAldo/requirement-api/wiki
-  openRequirements:
-    requirements:
-      has permission:
-        type: "has permission"
-        permission: "your.permission.node"
-    denyActions:
-      - "[sound] ENTITY_VILLAGER_NO"
-      - "[message] &cSorry you don't open the example menu."
+  openRequirements: EXPRESSION
 
   # Actions format
   # If you don't know, can read the wiki here: https://github.com/SoyAldo/action-api/wiki
-  openActions:
-    - "[sound] ENTITY_PLAYER_LEVELUP"
+  openActions: EXPRESSION
+
+  # Here can put your static items
+  # If you don't know, can read the wiki here: https://github.com/SoyAldo/inventory-api/wiki#Items
+  items: []
+
+
+pagination:
+
+  title: "Example paginated menu %page%"
+  rows: 6 # 1-6
+  updateInterval: 1 # In seconds, default is 0
+
+  paginated: true
+
+  paginationInfo:
+
+    # Slots where items put to pagination
+    slots: [ "10-16" ]
+
+    # Type for the data
+    # Available types
+    #   players -> shows list of players
+    #   offlinePlayers -> shows list of offline players
+    #   itemStack -> shows list of ItemStack
+    #   enchantments -> shows list of Enchantments
+    #   worlds -> shows list of worlds
+    # You can create custom types, see how you can here: https://github.com/SoyAldo/inventory-api/wiki#CustomPaginationType
+    type: "players"
+    items:
+      exist:
+        material: "CHEST"
+        displayName: "&4&lExist item: %index%"
+        leftClickActions:
+          - "[select-item] %index%"
+
+      empty: [ ]
+
+    # leftClickRequirements, leftShiftClickRequirements, middleClickRequirements, rightShiftClickRequirements, rightClickRequirements
+    leftClickRequirements: EXPRESSION
+
+    # leftClickActions, leftShiftClickActions, middleClickActions, rightShiftClickActions, rightClickActions
+    leftClickActions: EXPRESSION
+
+
+  items: []

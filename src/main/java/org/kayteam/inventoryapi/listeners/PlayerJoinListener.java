@@ -20,7 +20,7 @@ public class PlayerJoinListener implements Listener {
     @EventHandler
     public void onPlayerJoin( PlayerJoinEvent event ) {
 
-        // Pagination
+        // Paginations
         playersPagination();
         offlinePlayersPagination( event );
 
@@ -28,24 +28,32 @@ public class PlayerJoinListener implements Listener {
 
     private void playersPagination() {
 
+        // return if players pagination don't exist
         if ( ! inventoryManager.existPagination( "players" ) )   return;
 
+        // Get the players pagination
         Pagination playersPagination = inventoryManager.getPagination( "players" );
 
+        // Update the pagination
         playersPagination.updateData();
 
     }
 
     private void offlinePlayersPagination( PlayerJoinEvent event ) {
 
+        // return if offlinePlayers pagination don't exist
         if ( ! inventoryManager.existPagination( "offlinePlayers" ) )   return;
 
+        // Get the player
         Player player = event.getPlayer();
 
+        // return ff the player has played before
         if ( player.hasPlayedBefore() )   return;
 
+        // Get the offlinePlayers pagination
         Pagination playersPagination = inventoryManager.getPagination( "offlinePlayers" );
 
+        // Update the pagination
         playersPagination.updateData();
 
     }

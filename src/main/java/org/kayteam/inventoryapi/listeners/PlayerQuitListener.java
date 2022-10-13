@@ -22,21 +22,30 @@ public class PlayerQuitListener implements Listener {
     @EventHandler
     public void onPlayerQuit( PlayerQuitEvent event ) {
 
+        // Get the player
         Player player = event.getPlayer();
 
+        // Get the player uuid
         UUID uuid = player.getUniqueId();
 
+        // Remove opened inventory from the player
         inventoryManager.removeOpenedInventory( uuid );
 
-        // Pagination
+        // Paginations
+        playersPagination();
 
-        if ( inventoryManager.existPagination( "players" ) ) {
+    }
 
-            Pagination playersPagination = inventoryManager.getPagination( "players" );
+    private void playersPagination() {
 
-            playersPagination.updateData();
+        // return if players pagination don't exist
+        if ( ! inventoryManager.existPagination( "players" ) )   return;
 
-        }
+        // Get the players pagination
+        Pagination playersPagination = inventoryManager.getPagination( "players" );
+
+        // Update the pagination
+        playersPagination.updateData();
 
     }
 
