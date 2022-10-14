@@ -5,6 +5,25 @@ import java.util.List;
 
 public class InventoryUtil {
 
+
+    public static List< Integer > getSlotsFromFormats( List< String > formats ) {
+
+        List< Integer > result = new ArrayList<>();
+
+        for ( String format : formats ) {
+
+            for ( int slot : getSlotsFromFormat( format ) ) {
+
+                if ( ! result.contains( slot ) )   result.add( slot );
+
+            }
+
+        }
+
+        return result;
+
+    }
+
     public static List<Integer> getSlotsFromFormat( String format ) {
 
         List<Integer> result = new ArrayList<>();

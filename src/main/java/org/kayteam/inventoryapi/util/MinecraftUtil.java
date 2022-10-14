@@ -291,7 +291,7 @@ public class MinecraftUtil {
 
                     try {
 
-                        material = Material.valueOf( materialString );
+                        material = Material.valueOf( materialString.toUpperCase() );
 
                         result = new ItemStack( material );
 

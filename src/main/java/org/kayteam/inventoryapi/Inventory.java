@@ -1,11 +1,15 @@
 package org.kayteam.inventoryapi;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.kayteam.actionapi.Actions;
 import org.kayteam.requirementapi.Requirements;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 public class Inventory {
 
@@ -14,6 +18,11 @@ public class Inventory {
     private int rows , updateInterval;
     private Requirements openRequirements;
     private Actions openActions;
+    private boolean paginated;
+    private String paginationType = "";
+    private List< Integer > paginationSlots = new ArrayList<>();
+    private Item paginationItemExist = new Item( new ItemStack( Material.AIR ) );
+    private Item paginationItemEmpty = new Item( new ItemStack( Material.AIR ) );
     private final HashMap< Integer , Slot > slots;
 
     private InventoryManager inventoryManager;
@@ -25,6 +34,7 @@ public class Inventory {
         this.updateInterval = updateInterval;
         openRequirements = new Requirements();
         openActions = new Actions();
+        paginated = false;
         slots = new HashMap<>();
 
         for ( int slot = 0 ; slot < ( rows * 9 ) ; slot++ ) {
@@ -42,6 +52,7 @@ public class Inventory {
         this.updateInterval = 0;
         openRequirements = new Requirements();
         openActions = new Actions();
+        paginated = false;
         slots = new HashMap<>();
 
         for ( int slot = 0 ; slot < ( rows * 9 ) ; slot++ ) {
@@ -163,6 +174,106 @@ public class Inventory {
     }
 
     /**
+     * Verify if the inventory contain pagination
+     * @return true if the inventory contain pagination or false if not
+     */
+    public boolean isPaginated() {
+
+        return paginated;
+
+    }
+
+    /**
+     * Set new paginated value
+     * @param paginated The new paginated value
+     */
+    public void setPaginated( boolean paginated ) {
+
+        this.paginated = paginated;
+
+    }
+
+    /**
+     * Get the pagination type
+     * @return The pagination type
+     */
+    public String getPaginationType() {
+
+        return paginationType;
+
+    }
+
+    /**
+     * Set the new pagination type
+     * @param paginationType The new pagination type
+     */
+    public void setPaginationType( String paginationType ) {
+
+        this.paginationType = paginationType;
+
+    }
+
+    /**
+     * Get the pagination slots
+     * @return The pagination slots
+     */
+    public List< Integer > getPaginationSlots() {
+
+        return paginationSlots;
+
+    }
+
+    /**
+     * Set the new pagination slots
+     * @param paginationSlots The new pagination slots
+     */
+    public void setPaginationSlots( List< Integer > paginationSlots ) {
+
+        this.paginationSlots = paginationSlots;
+
+    }
+
+    /**
+     * Get pagination item exist
+     * @return The pagination item exist
+     */
+    public Item getPaginationItemExist() {
+
+        return paginationItemExist;
+
+    }
+
+    /**
+     * Set the new pagination item exist
+     * @param paginationItemExist The item new pagination item exist
+     */
+    public void setPaginationItemExist( Item paginationItemExist ) {
+
+        this.paginationItemExist = paginationItemExist;
+
+    }
+
+    /**
+     * Get the pagination item empty
+     * @return The item
+     */
+    public Item getPaginationItemEmpty() {
+
+        return paginationItemEmpty;
+
+    }
+
+    /**
+     * Set the new pagination item empty
+     * @param paginationItemEmpty The new pagination item empty
+     */
+    public void setPaginationItemEmpty( Item paginationItemEmpty ) {
+
+        this.paginationItemEmpty = paginationItemEmpty;
+
+    }
+
+    /**
      * Get slots
      * @return Map with slots
      */
@@ -203,6 +314,16 @@ public class Inventory {
         inventoryView.setOpenRequirements( openRequirements );
 
         inventoryView.setOpenActions( openActions );
+
+        inventoryView.setPaginated( paginated );
+
+        inventoryView.setPaginationType( paginationType );
+
+        inventoryView.setPaginationSlots( paginationSlots );
+
+        inventoryView.setPaginationItemExist( paginationItemExist );
+
+        inventoryView.setPaginationItemEmpty( paginationItemEmpty );
 
         inventoryView.setPlayer( player );
 

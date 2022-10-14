@@ -21,8 +21,8 @@ public class Item {
     private String displayName;
     private List<String> lore;
     private Requirements viewRequirements;
-
-    private final HashMap< ClickType , ClickActions > clickActions = new HashMap<>();
+    private HashMap< ClickType , ClickActions > clickActions = new HashMap<>();
+    private HashMap< String , Object > data = new HashMap<>();
 
     public Item( ItemStack itemStack , String displayName , List<String> lore ) {
 
@@ -47,6 +47,46 @@ public class Item {
         update = false;
 
         this.itemStack = itemStack;
+
+        if ( this.itemStack == null ) {
+
+            this.itemStack = new ItemStack( Material.AIR );
+
+            this.displayName = displayName;
+
+            lore = new ArrayList<>();
+
+        } else {
+
+            ItemMeta itemMeta = itemStack.getItemMeta();
+
+            if ( itemMeta != null ) {
+
+                this.displayName = displayName;
+
+                if ( itemMeta.hasLore() ) lore = itemMeta.getLore();
+
+            }
+
+        }
+
+    }
+
+    public Item( Item item ) {
+
+        itemStack = item.getItemStack();
+
+        priority = item.getPriority();
+
+        update = item.isUpdate();
+
+        displayName = item.getDisplayName();
+
+        lore = item.getLore();
+
+        viewRequirements = item.getViewRequirements();
+
+        data = item.getData();
 
         if ( this.itemStack == null ) {
 
@@ -237,6 +277,36 @@ public class Item {
     public HashMap< ClickType , ClickActions > getClickActions() {
 
         return clickActions;
+
+    }
+
+    /**
+     * Set the new click actions
+     * @param clickActions The new click actions
+     */
+    public void setClickActions( HashMap< ClickType , ClickActions > clickActions ) {
+
+        this.clickActions = clickActions;
+
+    }
+
+    /**
+     * Get data
+     * @return The data
+     */
+    public HashMap< String , Object > getData() {
+
+        return data;
+
+    }
+
+    /**
+     * Set the new data
+     * @param data The new data
+     */
+    public void setData( HashMap< String , Object > data ) {
+
+        this.data = data;
 
     }
 

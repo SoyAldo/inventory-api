@@ -360,9 +360,9 @@ public class InventoryManager {
         inventory = new Inventory( name , title , rows );
 
         // Update Interval
-        if ( ! configurationSection.contains( "updateInterval" ) ) {
+        if ( configurationSection.contains( "updateInterval" ) ) {
 
-            if ( ! configurationSection.isInt( "updateInterval" ) ) {
+            if ( configurationSection.isInt( "updateInterval" ) ) {
 
                 inventory.setUpdateInterval( configurationSection.getInt( "updateInterval" ) );
 
@@ -375,6 +375,89 @@ public class InventoryManager {
 
         // Open Actions
         inventory.setOpenActions( getActions( "openActions" , configurationSection ) );
+
+        // Pagination
+        if ( configurationSection.contains( "paginated" ) ) {
+
+            if ( configurationSection.isBoolean( "paginated" ) ) {
+
+                inventory.setPaginated( configurationSection.getBoolean( "paginated" ) );
+
+            }
+
+        }
+
+        if ( configurationSection.contains( "paginationInfo.slots" ) ) {
+
+            if ( configurationSection.isList( "paginationInfo.slots" ) ) {
+
+                inventory.setPaginationSlots( InventoryUtil.getSlotsFromFormats( configurationSection.getStringList( "paginationInfo.slots" ) ) );
+
+            }
+
+        }
+
+        if ( configurationSection.contains( "paginationInfo.type" ) ) {
+
+            if ( configurationSection.isString( "paginationInfo.type" ) ) {
+
+                inventory.setPaginationType( configurationSection.getString( "paginationInfo.type" ) );
+
+            }
+
+        }
+
+        if ( configurationSection.contains( "paginationInfo.existItem" ) ) {
+
+            if ( configurationSection.isConfigurationSection( "paginationInfo.existItem" ) ) {
+
+                ConfigurationSection existItemSection = configurationSection.getConfigurationSection( "paginationInfo.emptyItem" );
+
+                Item item = new Item( MinecraftUtil.getItemStack( existItemSection ) );
+
+                item.setViewRequirements( getRequirements( "viewRequirements" , existItemSection ) );
+
+                item.getClickActions().put( ClickType.LEFT , getClickActions( "leftClick", ClickType.LEFT , existItemSection ) );
+
+                item.getClickActions().put( ClickType.SHIFT_LEFT , getClickActions( "shiftLeftClick", ClickType.SHIFT_LEFT , existItemSection ) );
+
+                item.getClickActions().put( ClickType.MIDDLE , getClickActions( "middleClick", ClickType.MIDDLE , existItemSection ) );
+
+                item.getClickActions().put( ClickType.RIGHT , getClickActions( "rightClick", ClickType.RIGHT , existItemSection ) );
+
+                item.getClickActions().put( ClickType.SHIFT_RIGHT , getClickActions( "shiftRightClick", ClickType.LEFT , existItemSection ) );
+
+                inventory.setPaginationItemExist( item );
+
+            }
+
+        }
+
+        if ( configurationSection.contains( "paginationInfo.emptyItem" ) ) {
+
+            if ( configurationSection.isConfigurationSection( "paginationInfo.emptyItem" ) ) {
+
+                ConfigurationSection emptyItemSection = configurationSection.getConfigurationSection( "paginationInfo.emptyItem" );
+
+                Item item = new Item( MinecraftUtil.getItemStack( emptyItemSection ) );
+
+                item.setViewRequirements( getRequirements( "viewRequirements" , emptyItemSection ) );
+
+                item.getClickActions().put( ClickType.LEFT , getClickActions( "leftClick", ClickType.LEFT , emptyItemSection ) );
+
+                item.getClickActions().put( ClickType.SHIFT_LEFT , getClickActions( "shiftLeftClick", ClickType.SHIFT_LEFT , emptyItemSection ) );
+
+                item.getClickActions().put( ClickType.MIDDLE , getClickActions( "middleClick", ClickType.MIDDLE , emptyItemSection ) );
+
+                item.getClickActions().put( ClickType.RIGHT , getClickActions( "rightClick", ClickType.RIGHT , emptyItemSection ) );
+
+                item.getClickActions().put( ClickType.SHIFT_RIGHT , getClickActions( "shiftRightClick", ClickType.LEFT , emptyItemSection ) );
+
+                inventory.setPaginationItemEmpty( item );
+
+            }
+
+        }
 
         // Items
         for ( String itemName : configurationSection.getConfigurationSection( "items" ).getKeys( false ) ) {
@@ -401,7 +484,7 @@ public class InventoryManager {
 
                 if ( itemSection.isList( "slots" ) ) {
 
-                    for ( String slotsFormat : itemSection.getStringList( "slots" ) )   slots.addAll( InventoryUtil.getSlotsFromFormat( slotsFormat ) );
+                    slots = InventoryUtil.getSlotsFromFormats( itemSection.getStringList( "slots" ) );
 
                 } else if ( itemSection.isString( "slots" ) ) {
 
