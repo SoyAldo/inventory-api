@@ -12,9 +12,11 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.kayteam.actionapi.Actions;
 import org.kayteam.inventoryapi.events.InventoryOpenEvent;
+import org.kayteam.inventoryapi.pagination.Pagination;
 import org.kayteam.inventoryapi.util.PlaceholderAPIUtil;
 import org.kayteam.requirementapi.Requirements;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -403,6 +405,8 @@ public class InventoryView {
 
             for ( int i = 0 ; i < slot.getItems().size() ; i++) {
 
+                if ( paginated && paginationSlots.contains( i ) )   continue;
+
                 Item item = slot.getItems().get( i );
 
                 if ( item.getViewRequirements().verifyAll( player , false ) ) {
@@ -420,6 +424,38 @@ public class InventoryView {
             visibleSlot.getItems().add( result );
 
             visibleSlots.put( slot.getSlot() , visibleSlot );
+
+        }
+
+        if ( paginated ) {
+
+            Pagination pagination = inventoryManager.getPagination( paginationType );
+
+            if ( pagination != null ) {
+
+                for ( int i = 0 ; i < ( paginationSlots.size() ) ; i++ ) {
+
+                    int realIndex = ( ( ( page * paginationSlots.size() ) - paginationSlots.size() ) + i );
+
+                    if ( pagination.getData().size() > realIndex ) {
+
+                        Item exist = new Item( paginationItemExist );
+
+                        exist.getData().put( "paginationData" , pagination.getData().get( realIndex ) );
+
+                        visibleSlots.get( paginationSlots.get( i ) ).addItem( exist );
+
+                    } else {
+
+                        Item empty = new Item( paginationItemEmpty );
+
+                        visibleSlots.get( paginationSlots.get( i ) ).addItem( empty );
+
+                    }
+
+                }
+
+            }
 
         }
 
@@ -442,23 +478,6 @@ public class InventoryView {
             Item visibleItem = visibleSlot.getItems().get( 0 );
 
             inventory.setItem( visibleSlot.getSlot() , visibleItem.getItemStack() );
-
-        }
-
-        if ( paginated ) {
-
-            // TODO pagination
-            for ( int slotNumber : paginationSlots ) {
-
-                Slot visibleSlot = visibleSlots.get( slotNumber );
-
-                visibleSlot.getItems().clear();
-
-                Item a = new Item( paginationItemExist );
-
-                visibleSlot.getItems().add( a );
-
-            }
 
         }
 
@@ -498,6 +517,8 @@ public class InventoryView {
 
             for ( int i = 0 ; i < slot.getItems().size() ; i++) {
 
+                if ( paginated && paginationSlots.contains( i ) )   continue;
+
                 Item item = slot.getItems().get( i );
 
                 if ( item.getViewRequirements().verifyAll( player , false ) ) {
@@ -518,6 +539,38 @@ public class InventoryView {
 
         }
 
+        if ( paginated ) {
+
+            Pagination pagination = inventoryManager.getPagination( paginationType );
+
+            if ( pagination != null ) {
+
+                for ( int i = 0 ; i < ( paginationSlots.size() ) ; i++ ) {
+
+                    int realIndex = ( ( ( page * paginationSlots.size() ) - paginationSlots.size() ) + i );
+
+                    if ( pagination.getData().size() > realIndex ) {
+
+                        Item exist = new Item( paginationItemExist );
+
+                        exist.getData().put( "paginationData" , pagination.getData().get( realIndex ) );
+
+                        visibleSlots.get( paginationSlots.get( i ) ).addItem( exist );
+
+                    } else {
+
+                        Item empty = new Item( paginationItemEmpty );
+
+                        visibleSlots.get( paginationSlots.get( i ) ).addItem( empty );
+
+                    }
+
+                }
+
+            }
+
+        }
+
         for ( Slot visibleSlot : visibleSlots.values() ) {
 
             if ( visibleSlot.getItems().isEmpty() )   continue;
@@ -527,12 +580,6 @@ public class InventoryView {
             Item visibleItem = visibleSlot.getItems().get( 0 );
 
             inventory.setItem( visibleSlot.getSlot() , visibleItem.getItemStack() );
-
-        }
-
-        if ( paginated ) {
-
-            // TODO pagination
 
         }
 
