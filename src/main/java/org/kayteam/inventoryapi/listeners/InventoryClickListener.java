@@ -7,6 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.kayteam.inventoryapi.*;
+import org.kayteam.inventoryapi.events.ItemClickEvent;
 
 import java.util.UUID;
 
@@ -42,6 +43,12 @@ public class InventoryClickListener implements Listener {
         if ( slot.getItems().isEmpty() )   return;
 
         Item item = slot.getItems().get( 0 );
+
+        ItemClickEvent itemClickEvent = new ItemClickEvent( inventoryManager , inventoryView , player , item );
+
+        inventoryManager.getJavaPlugin().getServer().getPluginManager().callEvent( itemClickEvent );
+
+        if ( itemClickEvent.isCancelled() )   return;
 
         ClickType clickType = event.getClick();
 

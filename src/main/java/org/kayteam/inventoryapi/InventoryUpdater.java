@@ -54,7 +54,7 @@ public class InventoryUpdater extends BukkitRunnable {
 
             if ( ! item.isUpdate() ) continue;
 
-            item.updateItem( inventoryView.getPlayer() );
+            item.updateItem( inventoryManager , inventoryView , inventoryView.getPlayer() );
 
             inventoryView.getInventory().setItem( slot.getSlot() , item.getItemStack() );
 

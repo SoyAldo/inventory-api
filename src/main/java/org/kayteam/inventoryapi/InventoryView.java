@@ -441,7 +441,7 @@ public class InventoryView {
 
                         Item exist = new Item( paginationItemExist );
 
-                        exist.getData().put( "paginationData" , pagination.getData().get( realIndex ) );
+                        exist.getData().put( pagination.getName() , pagination.getData().get( realIndex ) );
 
                         visibleSlots.get( paginationSlots.get( i ) ).addItem( exist );
 
@@ -553,7 +553,7 @@ public class InventoryView {
 
                         Item exist = new Item( paginationItemExist );
 
-                        exist.getData().put( "paginationData" , pagination.getData().get( realIndex ) );
+                        exist.getData().put( pagination.getName() , pagination.getData().get( realIndex ) );
 
                         visibleSlots.get( paginationSlots.get( i ) ).addItem( exist );
 
