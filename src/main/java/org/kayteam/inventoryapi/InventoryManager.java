@@ -110,8 +110,8 @@ public class InventoryManager {
         javaPlugin.getServer().getPluginManager().registerEvents( new PlayerQuitListener( this ) , javaPlugin);
 
         // Paginations
-        paginations.put( "players" , new PlayersPagination() );
-        paginations.put( "offlinePlayers" , new OfflinePlayersPagination() );
+        paginations.put( "players" , new PlayersPagination( this ) );
+        paginations.put( "offlinePlayers" , new OfflinePlayersPagination( this ) );
 
     }
 

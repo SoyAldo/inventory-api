@@ -11,7 +11,15 @@ public abstract class Pagination {
     private List< Object > data = new ArrayList<>();
     private InventoryManager inventoryManager;
 
-    public Pagination(String name) {
+    public Pagination( InventoryManager inventoryManager , String name ) {
+
+        this.inventoryManager = inventoryManager;
+
+        this.name = name;
+
+    }
+
+    public Pagination(String name ) {
 
         this.name = name;
 

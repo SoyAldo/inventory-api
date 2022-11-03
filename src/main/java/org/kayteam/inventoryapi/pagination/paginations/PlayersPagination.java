@@ -12,9 +12,9 @@ import java.util.Collections;
 
 public class PlayersPagination extends Pagination {
 
-    public PlayersPagination() {
+    public PlayersPagination( InventoryManager inventoryManager ) {
 
-        super( "players" );
+        super( inventoryManager , "players" );
 
     }
 

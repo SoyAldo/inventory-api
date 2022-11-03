@@ -11,9 +11,9 @@ import java.util.Arrays;
 
 public class OfflinePlayersPagination extends Pagination {
 
-    public OfflinePlayersPagination() {
+    public OfflinePlayersPagination( InventoryManager inventoryManager ) {
 
-        super( "offlinePlayers" );
+        super( inventoryManager , "offlinePlayers" );
 
     }
 
