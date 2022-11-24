@@ -3,10 +3,12 @@ package org.kayteam.inventoryapi.listeners;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.kayteam.inventoryapi.*;
+import org.kayteam.inventoryapi.events.ItemClickEvent;
 
 import java.util.UUID;
 
@@ -18,14 +20,26 @@ public class InventoryClickListener implements Listener {
         this.inventoryManager = inventoryManager;
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onInventoryClick(InventoryClickEvent event) {
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onInventoryClick( InventoryClickEvent event ) {
 
         Player player = ( Player ) event.getWhoClicked();
 
         UUID uuid = player.getUniqueId();
 
-        if ( ! inventoryManager.hasOpenedInventory( uuid ) )   return;
+        if ( ! inventoryManager.hasOpenedInventory( uuid ) ) {
+
+            if ( inventoryManager.getRegisteredTitles().contains( event.getView().getTitle() ) ) {
+
+                event.setCancelled( true );
+
+                player.closeInventory();
+
+            }
+
+            return;
+
+        }
 
         InventoryView inventoryView = inventoryManager.getOpenedInventory( uuid );
 
@@ -42,6 +56,12 @@ public class InventoryClickListener implements Listener {
         if ( slot.getItems().isEmpty() )   return;
 
         Item item = slot.getItems().get( 0 );
+
+        ItemClickEvent itemClickEvent = new ItemClickEvent( inventoryManager , inventoryView , player , item );
+
+        inventoryManager.getJavaPlugin().getServer().getPluginManager().callEvent( itemClickEvent );
+
+        if ( itemClickEvent.isCancelled() )   return;
 
         ClickType clickType = event.getClick();
 

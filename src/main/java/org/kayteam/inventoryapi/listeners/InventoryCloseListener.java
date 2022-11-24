@@ -3,6 +3,7 @@ package org.kayteam.inventoryapi.listeners;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.kayteam.inventoryapi.InventoryManager;
@@ -18,7 +19,7 @@ public class InventoryCloseListener implements Listener {
         this.inventoryManager = inventoryManager;
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlayerQuit(InventoryCloseEvent event) {
 
         Player player = ( Player ) event.getPlayer();

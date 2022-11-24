@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.kayteam.inventoryapi.events.ItemUpdateEvent;
 import org.kayteam.inventoryapi.util.PlaceholderAPIUtil;
 import org.kayteam.requirementapi.Requirements;
 
@@ -21,8 +22,8 @@ public class Item {
     private String displayName;
     private List<String> lore;
     private Requirements viewRequirements;
-
-    private final HashMap< ClickType , ClickActions > clickActions = new HashMap<>();
+    private HashMap< ClickType , ClickActions > clickActions = new HashMap<>();
+    private HashMap< String , Object > data = new HashMap<>();
 
     public Item( ItemStack itemStack , String displayName , List<String> lore ) {
 
@@ -63,6 +64,48 @@ public class Item {
             if ( itemMeta != null ) {
 
                 this.displayName = displayName;
+
+                if ( itemMeta.hasLore() ) lore = itemMeta.getLore();
+
+            }
+
+        }
+
+    }
+
+    public Item( Item item ) {
+
+        itemStack = item.getItemStack();
+
+        priority = item.getPriority();
+
+        update = item.isUpdate();
+
+        displayName = item.getDisplayName();
+
+        lore = item.getLore();
+
+        viewRequirements = item.getViewRequirements();
+
+        clickActions = item.getClickActions();
+
+        data = item.getData();
+
+        if ( this.itemStack == null ) {
+
+            this.itemStack = new ItemStack( Material.AIR );
+
+            this.displayName = item.getDisplayName();
+
+            lore = new ArrayList<>();
+
+        } else {
+
+            ItemMeta itemMeta = itemStack.getItemMeta();
+
+            if ( itemMeta != null ) {
+
+                this.displayName = item.getDisplayName();
 
                 if ( itemMeta.hasLore() ) lore = itemMeta.getLore();
 
@@ -241,16 +284,58 @@ public class Item {
     }
 
     /**
+     * Set the new click actions
+     * @param clickActions The new click actions
+     */
+    public void setClickActions( HashMap< ClickType , ClickActions > clickActions ) {
+
+        this.clickActions = clickActions;
+
+    }
+
+    /**
+     * Get data
+     * @return The data
+     */
+    public HashMap< String , Object > getData() {
+
+        return data;
+
+    }
+
+    /**
+     * Set the new data
+     * @param data The new data
+     */
+    public void setData( HashMap< String , Object > data ) {
+
+        this.data = data;
+
+    }
+
+    /**
      * Update the ItemStack
      * @param player The player with PlaceholderAPI apply placeholders
      */
-    public void updateItem( Player player ) {
+    public void updateItem( InventoryManager inventoryManager , InventoryView inventoryView , Player player ) {
 
         ItemMeta itemMeta = itemStack.getItemMeta();
+
+        ItemUpdateEvent itemUpdateEvent = new ItemUpdateEvent( inventoryManager , inventoryView , this );
+
+        inventoryManager.getJavaPlugin().getServer().getPluginManager().callEvent( itemUpdateEvent );
+
+        if ( itemUpdateEvent.isCancelled() )   return;
 
         if ( ! displayName.equals("") ) {
 
             String newDisplayName = displayName;
+
+            for ( String replacement : itemUpdateEvent.getReplacements().keySet() ) {
+
+                newDisplayName = newDisplayName.replaceAll( replacement , itemUpdateEvent.getReplacements().get( replacement ) );
+
+            }
 
             newDisplayName = PlaceholderAPIUtil.setPlaceholders( player , newDisplayName );
 
@@ -265,6 +350,12 @@ public class Item {
             List<String> newLore = new ArrayList<>();
 
             for ( String loreLine : lore ) {
+
+                for ( String replacement : itemUpdateEvent.getReplacements().keySet() ) {
+
+                    loreLine = loreLine.replaceAll( replacement , itemUpdateEvent.getReplacements().get( replacement ) );
+
+                }
 
                 loreLine = PlaceholderAPIUtil.setPlaceholders( player , loreLine );
 

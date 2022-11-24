@@ -1,6 +1,5 @@
 package org.kayteam.inventoryapi;
 
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -11,7 +10,11 @@ import org.kayteam.actionapi.Actions;
 import org.kayteam.inventoryapi.actions.CloseExpansion;
 import org.kayteam.inventoryapi.listeners.InventoryClickListener;
 import org.kayteam.inventoryapi.listeners.InventoryCloseListener;
+import org.kayteam.inventoryapi.listeners.PlayerJoinListener;
 import org.kayteam.inventoryapi.listeners.PlayerQuitListener;
+import org.kayteam.inventoryapi.pagination.Pagination;
+import org.kayteam.inventoryapi.pagination.paginations.OfflinePlayersPagination;
+import org.kayteam.inventoryapi.pagination.paginations.PlayersPagination;
 import org.kayteam.inventoryapi.util.InventoryUtil;
 import org.kayteam.inventoryapi.util.MinecraftUtil;
 import org.kayteam.requirementapi.RequirementManager;
@@ -22,10 +25,13 @@ import java.util.*;
 public class InventoryManager {
 
     private final HashMap< String , Inventory > registeredInventories = new HashMap<>();
+    private final List<String> registeredTitles = new ArrayList<>();
     private final HashMap< UUID , InventoryView > openedInventories = new HashMap<>();
+    private final HashMap< String , Pagination > paginations = new HashMap<>();
     private final RequirementManager requirementManager;
     private final ActionManager actionManager;
     private final JavaPlugin javaPlugin;
+
 
     public InventoryManager( JavaPlugin javaPlugin ) {
 
@@ -58,6 +64,16 @@ public class InventoryManager {
     }
 
     /**
+     * Get paginations
+     * @return All paginations map
+     */
+    public HashMap<String, Pagination> getPaginations() {
+
+        return paginations;
+
+    }
+
+    /**
      * Get the requirement manager
      * @return The requirement manager
      */
@@ -82,17 +98,22 @@ public class InventoryManager {
      */
     public void registerManager() {
 
+        // Managers
         requirementManager.registerManager();
-
         actionManager.registerManager();
 
+        // Actions
         actionManager.addActionExpansion( new CloseExpansion() );
 
+        // Listeners
         javaPlugin.getServer().getPluginManager().registerEvents( new InventoryClickListener( this ) , javaPlugin);
-
         javaPlugin.getServer().getPluginManager().registerEvents( new InventoryCloseListener( this ) , javaPlugin);
-
+        javaPlugin.getServer().getPluginManager().registerEvents( new PlayerJoinListener( this ) , javaPlugin);
         javaPlugin.getServer().getPluginManager().registerEvents( new PlayerQuitListener( this ) , javaPlugin);
+
+        // Paginations
+        paginations.put( "players" , new PlayersPagination( this ) );
+        paginations.put( "offlinePlayers" , new OfflinePlayersPagination( this ) );
 
     }
 
@@ -101,8 +122,8 @@ public class InventoryManager {
      */
     public void reloadManager() {
 
+        // Managers
         requirementManager.reloadManager();
-
         actionManager.reloadManager();
 
     }
@@ -160,6 +181,10 @@ public class InventoryManager {
 
         registeredInventories.put( inventory.getName() , inventory );
 
+    }
+
+    public List<String> getRegisteredTitles() {
+        return registeredTitles;
     }
 
     /**
@@ -278,6 +303,48 @@ public class InventoryManager {
 
     }
 
+    /**
+     * Verify if specific pagination exist
+     * @param name The pagination name
+     * @return true if exist or false if not
+     */
+    public boolean existPagination( String name ) {
+
+        return paginations.containsKey( name );
+
+    }
+
+    /**
+     * Add new pagination
+     * @param pagination The new pagination
+     */
+    public void addPagination( Pagination pagination ) {
+
+        paginations.put( pagination.getName() , pagination );
+
+    }
+
+    /**
+     * Remove specific pagination
+     * @param name The pagination name
+     */
+    public void removePagination( String name ) {
+
+        paginations.remove( name );
+
+    }
+
+    /**
+     * Get specific pagination
+     * @param name The pagination name
+     * @return The pagination if exist or null if not exist
+     */
+    public Pagination getPagination( String name ) {
+
+        return paginations.get( name );
+
+    }
+
     public Inventory loadInventory( String name , ConfigurationSection configurationSection ) {
 
         // Initialize inventory
@@ -299,9 +366,9 @@ public class InventoryManager {
         inventory = new Inventory( name , title , rows );
 
         // Update Interval
-        if ( ! configurationSection.contains( "updateInterval" ) ) {
+        if ( configurationSection.contains( "updateInterval" ) ) {
 
-            if ( ! configurationSection.isInt( "updateInterval" ) ) {
+            if ( configurationSection.isInt( "updateInterval" ) ) {
 
                 inventory.setUpdateInterval( configurationSection.getInt( "updateInterval" ) );
 
@@ -314,6 +381,89 @@ public class InventoryManager {
 
         // Open Actions
         inventory.setOpenActions( getActions( "openActions" , configurationSection ) );
+
+        // Pagination
+        if ( configurationSection.contains( "paginated" ) ) {
+
+            if ( configurationSection.isBoolean( "paginated" ) ) {
+
+                inventory.setPaginated( configurationSection.getBoolean( "paginated" ) );
+
+            }
+
+        }
+
+        if ( configurationSection.contains( "paginationInfo.slots" ) ) {
+
+            if ( configurationSection.isList( "paginationInfo.slots" ) ) {
+
+                inventory.setPaginationSlots( InventoryUtil.getSlotsFromFormats( configurationSection.getStringList( "paginationInfo.slots" ) ) );
+
+            }
+
+        }
+
+        if ( configurationSection.contains( "paginationInfo.type" ) ) {
+
+            if ( configurationSection.isString( "paginationInfo.type" ) ) {
+
+                inventory.setPaginationType( configurationSection.getString( "paginationInfo.type" ) );
+
+            }
+
+        }
+
+        if ( configurationSection.contains( "paginationInfo.existItem" ) ) {
+
+            if ( configurationSection.isConfigurationSection( "paginationInfo.existItem" ) ) {
+
+                ConfigurationSection existItemSection = configurationSection.getConfigurationSection( "paginationInfo.emptyItem" );
+
+                Item item = new Item( MinecraftUtil.getItemStack( existItemSection ) );
+
+                item.setViewRequirements( getRequirements( "viewRequirements" , existItemSection ) );
+
+                item.getClickActions().put( ClickType.LEFT , getClickActions( "leftClick", ClickType.LEFT , existItemSection ) );
+
+                item.getClickActions().put( ClickType.SHIFT_LEFT , getClickActions( "shiftLeftClick", ClickType.SHIFT_LEFT , existItemSection ) );
+
+                item.getClickActions().put( ClickType.MIDDLE , getClickActions( "middleClick", ClickType.MIDDLE , existItemSection ) );
+
+                item.getClickActions().put( ClickType.RIGHT , getClickActions( "rightClick", ClickType.RIGHT , existItemSection ) );
+
+                item.getClickActions().put( ClickType.SHIFT_RIGHT , getClickActions( "shiftRightClick", ClickType.LEFT , existItemSection ) );
+
+                inventory.setPaginationItemExist( item );
+
+            }
+
+        }
+
+        if ( configurationSection.contains( "paginationInfo.emptyItem" ) ) {
+
+            if ( configurationSection.isConfigurationSection( "paginationInfo.emptyItem" ) ) {
+
+                ConfigurationSection emptyItemSection = configurationSection.getConfigurationSection( "paginationInfo.emptyItem" );
+
+                Item item = new Item( MinecraftUtil.getItemStack( emptyItemSection ) );
+
+                item.setViewRequirements( getRequirements( "viewRequirements" , emptyItemSection ) );
+
+                item.getClickActions().put( ClickType.LEFT , getClickActions( "leftClick", ClickType.LEFT , emptyItemSection ) );
+
+                item.getClickActions().put( ClickType.SHIFT_LEFT , getClickActions( "shiftLeftClick", ClickType.SHIFT_LEFT , emptyItemSection ) );
+
+                item.getClickActions().put( ClickType.MIDDLE , getClickActions( "middleClick", ClickType.MIDDLE , emptyItemSection ) );
+
+                item.getClickActions().put( ClickType.RIGHT , getClickActions( "rightClick", ClickType.RIGHT , emptyItemSection ) );
+
+                item.getClickActions().put( ClickType.SHIFT_RIGHT , getClickActions( "shiftRightClick", ClickType.LEFT , emptyItemSection ) );
+
+                inventory.setPaginationItemEmpty( item );
+
+            }
+
+        }
 
         // Items
         for ( String itemName : configurationSection.getConfigurationSection( "items" ).getKeys( false ) ) {
@@ -340,7 +490,7 @@ public class InventoryManager {
 
                 if ( itemSection.isList( "slots" ) ) {
 
-                    for ( String slotsFormat : itemSection.getStringList( "slots" ) )   slots.addAll( InventoryUtil.getSlotsFromFormat( slotsFormat ) );
+                    slots = InventoryUtil.getSlotsFromFormats( itemSection.getStringList( "slots" ) );
 
                 } else if ( itemSection.isString( "slots" ) ) {
 

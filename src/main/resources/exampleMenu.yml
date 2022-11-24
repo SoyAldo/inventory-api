@@ -5,16 +5,64 @@ name:
 
   # Requirements format
   # If you don't know, can read the wiki here: https://github.com/SoyAldo/requirement-api/wiki
-  openRequirements:
-    requirements:
-      has permission:
-        type: "has permission"
-        permission: "your.permission.node"
-    denyActions:
-      - "[sound] ENTITY_VILLAGER_NO"
-      - "[message] &cSorry you don't open the example menu."
+  openRequirements: EXPRESSION
 
   # Actions format
   # If you don't know, can read the wiki here: https://github.com/SoyAldo/action-api/wiki
-  openActions:
-    - "[sound] ENTITY_PLAYER_LEVELUP"
+  openActions: EXPRESSION
+
+  # Here can put your static items
+  # If you don't know, can read the wiki here: https://github.com/SoyAldo/inventory-api/wiki#Items
+  items: []
+
+
+pagination:
+
+  title: "Example paginated menu %page%"
+  rows: 6 # 1-6
+  updateInterval: 1 # In seconds, default is 0
+
+  paginated: true
+
+  paginationInfo:
+
+    # Type for the data
+    # Available types
+    #   players -> shows list of players
+    #   offlinePlayers -> shows list of offline players
+    #   itemStack -> shows list of ItemStack
+    #   enchantments -> shows list of Enchantments
+    #   worlds -> shows list of worlds
+    # You can create custom types, see how you can here: https://github.com/SoyAldo/inventory-api/wiki#CustomPaginationType
+    type: "players"
+
+    # Slots where items put to pagination
+    slots: [ "10-16" ]
+
+    existItem:
+      material: "CHEST"
+      displayName: "&4&lExist item: %index%"
+      leftClickActions:
+        - "[select-item] %index%"
+
+    emptyItem:
+      material: "RED_STAINED_GLASS_PANE"
+      displayName: "&4&lEmpty"
+
+  items:
+
+    gray_stained_glass_pane:
+      material: "gray_stained_glass_pane"
+      displayName: "&6"
+      slots: [ "0-53" ]
+
+    red_stained_glass_pane:
+      material: "red_stained_glass_pane"
+      displayName: "&6"
+      slots: [ "37-43" ]
+
+    close:
+      material: "barrier"
+      displayName: "&4&lClose"
+      slot: 40
+      leftClickActions: [ "[close]" ]

@@ -2,13 +2,24 @@ package org.kayteam.inventoryapi;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.kayteam.actionapi.Actions;
+import org.kayteam.inventoryapi.events.InventoryOpenEvent;
+import org.kayteam.inventoryapi.pagination.Pagination;
+import org.kayteam.inventoryapi.util.PlaceholderAPIUtil;
 import org.kayteam.requirementapi.Requirements;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class InventoryView {
 
@@ -17,12 +28,19 @@ public class InventoryView {
     private int updateInterval;
     private Requirements openRequirements;
     private Actions openActions;
+    private boolean paginated;
+    private int page = 1;
+    private String paginationType = "";
+    private List< Integer > paginationSlots = new ArrayList<>();
+    private Item paginationItemExist = new Item( new ItemStack( Material.AIR ) );
+    private Item paginationItemEmpty = new Item( new ItemStack( Material.AIR ) );
     private final HashMap<Integer , Slot> slots , visibleSlots;
 
     private InventoryManager inventoryManager;
     private InventoryUpdater inventoryUpdater;
     private Inventory inventory;
     private Player player;
+    private boolean clickable = true;
 
     public InventoryView( String title , int rows ) {
 
@@ -121,6 +139,122 @@ public class InventoryView {
     public void setOpenActions( Actions openActions ) {
 
         this.openActions = openActions;
+
+    }
+
+    public boolean isPaginated() {
+
+        return paginated;
+
+    }
+
+    /**
+     * Set new paginated value
+     * @param paginated The new paginated value
+     */
+    public void setPaginated( boolean paginated ) {
+
+        this.paginated = paginated;
+
+    }
+
+    /**
+     * Get the page
+     * @return The page
+     */
+    public int getPage() {
+
+        return page;
+
+    }
+
+    /**
+     * Set the new page
+     * @param page The new page
+     */
+    public void setPage( int page ) {
+
+        this.page = page;
+
+    }
+
+    /**
+     * Get the pagination type
+     * @return The pagination type
+     */
+    public String getPaginationType() {
+
+        return paginationType;
+
+    }
+
+    /**
+     * Set the new pagination type
+     * @param paginationType The new pagination type
+     */
+    public void setPaginationType( String paginationType ) {
+
+        this.paginationType = paginationType;
+
+    }
+
+    /**
+     * Get the pagination slots
+     * @return The pagination slots
+     */
+    public List< Integer > getPaginationSlots() {
+
+        return paginationSlots;
+
+    }
+
+    /**
+     * Set the new pagination slots
+     * @param paginationSlots The new pagination slots
+     */
+    public void setPaginationSlots( List< Integer > paginationSlots ) {
+
+        this.paginationSlots = paginationSlots;
+
+    }
+
+    /**
+     * Get pagination item exist
+     * @return The pagination item exist
+     */
+    public Item getPaginationItemExist() {
+
+        return paginationItemExist;
+
+    }
+
+    /**
+     * Set the new pagination item exist
+     * @param paginationItemExist The item new pagination item exist
+     */
+    public void setPaginationItemExist( Item paginationItemExist ) {
+
+        this.paginationItemExist = paginationItemExist;
+
+    }
+
+    /**
+     * Get the pagination item empty
+     * @return The item
+     */
+    public Item getPaginationItemEmpty() {
+
+        return paginationItemEmpty;
+
+    }
+
+    /**
+     * Set the new pagination item empty
+     * @param paginationItemEmpty The new pagination item empty
+     */
+    public void setPaginationItemEmpty( Item paginationItemEmpty ) {
+
+        this.paginationItemEmpty = paginationItemEmpty;
 
     }
 
@@ -225,13 +359,39 @@ public class InventoryView {
     }
 
     /**
+     * Verify if the inventory is clickable
+     * @return true if is clickable or false if not
+     */
+    public boolean isClickable() {
+
+        return clickable;
+
+    }
+
+    /**
+     * Set the new clickable value
+     * @param clickable The new clickable value
+     */
+    public void setClickable( boolean clickable ) {
+
+        this.clickable = clickable;
+
+    }
+
+    /**
      * Open the inventory
      */
     public void openInventory() {
 
         if ( ! openRequirements.verifyAll( player ) )   return;
 
-        inventory = Bukkit.createInventory( null , rows * 9 , ChatColor.translateAlternateColorCodes( '&' , title ) );
+        String realTitle = title;
+
+        realTitle = PlaceholderAPIUtil.setPlaceholders( player , realTitle );
+
+        realTitle = ChatColor.translateAlternateColorCodes( '&' , realTitle );
+
+        inventory = Bukkit.createInventory( null , rows * 9 , realTitle );
 
         for ( Slot slot : slots.values() ) {
 
@@ -244,6 +404,8 @@ public class InventoryView {
             Item result = null;
 
             for ( int i = 0 ; i < slot.getItems().size() ; i++) {
+
+                if ( paginated && paginationSlots.contains( i ) )   continue;
 
                 Item item = slot.getItems().get( i );
 
@@ -265,6 +427,38 @@ public class InventoryView {
 
         }
 
+        if ( paginated ) {
+
+            Pagination pagination = inventoryManager.getPagination( paginationType );
+
+            if ( pagination != null ) {
+
+                for ( int i = 0 ; i < ( paginationSlots.size() ) ; i++ ) {
+
+                    int realIndex = ( ( ( page * paginationSlots.size() ) - paginationSlots.size() ) + i );
+
+                    if ( pagination.getData().size() > realIndex ) {
+
+                        Item exist = new Item( paginationItemExist );
+
+                        exist.getData().put( pagination.getName() , pagination.getData().get( realIndex ) );
+
+                        visibleSlots.get( paginationSlots.get( i ) ).addItem( exist );
+
+                    } else {
+
+                        Item empty = new Item( paginationItemEmpty );
+
+                        visibleSlots.get( paginationSlots.get( i ) ).addItem( empty );
+
+                    }
+
+                }
+
+            }
+
+        }
+
         if ( updateInterval > 0 ) {
 
             inventoryUpdater = new InventoryUpdater( inventoryManager , this );
@@ -281,13 +475,121 @@ public class InventoryView {
 
             visibleSlot.sortItems();
 
-            inventory.setItem( visibleSlot.getSlot() , visibleSlot.getItems().get(0).getItemStack() );
+            Item visibleItem = visibleSlot.getItems().get( 0 );
+
+            inventory.setItem( visibleSlot.getSlot() , visibleItem.getItemStack() );
 
         }
+
+        JavaPlugin javaPlugin = inventoryManager.getJavaPlugin();
+
+        InventoryOpenEvent inventoryOpenEvent = new InventoryOpenEvent( inventoryManager , this , player );
+
+        Server server = javaPlugin.getServer();
+
+        PluginManager pluginManager = server.getPluginManager();
+
+        pluginManager.callEvent( inventoryOpenEvent );
+
+        if ( inventoryOpenEvent.isCancelled() )  return;
 
         player.openInventory( inventory );
 
         inventoryManager.addOpenedInventory( this );
+
+        if ( ! inventoryManager.getRegisteredTitles().contains( realTitle ) ) {
+
+            inventoryManager.getRegisteredTitles().add( realTitle );
+
+        }
+
+    }
+
+    public void reloadItems() {
+
+        clickable = false;
+
+        for ( Slot visibleSlot : visibleSlots.values() )   visibleSlot.getItems().clear();
+
+        for ( Slot slot : slots.values() ) {
+
+            slot.sortItems();
+
+            Slot visibleSlot = new Slot( slot.getSlot() );
+
+            if ( slot.getItems().isEmpty() )   continue;
+
+            Item result = null;
+
+            for ( int i = 0 ; i < slot.getItems().size() ; i++) {
+
+                if ( paginated && paginationSlots.contains( i ) )   continue;
+
+                Item item = slot.getItems().get( i );
+
+                if ( item.getViewRequirements().verifyAll( player , false ) ) {
+
+                    result = item;
+
+                    break;
+
+                }
+
+            }
+
+            if ( result == null )   continue;
+
+            visibleSlot.getItems().add( result );
+
+            visibleSlots.put( slot.getSlot() , visibleSlot );
+
+        }
+
+        if ( paginated ) {
+
+            Pagination pagination = inventoryManager.getPagination( paginationType );
+
+            if ( pagination != null ) {
+
+                for ( int i = 0 ; i < ( paginationSlots.size() ) ; i++ ) {
+
+                    int realIndex = ( ( ( page * paginationSlots.size() ) - paginationSlots.size() ) + i );
+
+                    if ( pagination.getData().size() > realIndex ) {
+
+                        Item exist = new Item( paginationItemExist );
+
+                        exist.getData().put( pagination.getName() , pagination.getData().get( realIndex ) );
+
+                        visibleSlots.get( paginationSlots.get( i ) ).addItem( exist );
+
+                    } else {
+
+                        Item empty = new Item( paginationItemEmpty );
+
+                        visibleSlots.get( paginationSlots.get( i ) ).addItem( empty );
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        for ( Slot visibleSlot : visibleSlots.values() ) {
+
+            if ( visibleSlot.getItems().isEmpty() )   continue;
+
+            visibleSlot.sortItems();
+
+            Item visibleItem = visibleSlot.getItems().get( 0 );
+
+            inventory.setItem( visibleSlot.getSlot() , visibleItem.getItemStack() );
+
+        }
+
+        clickable = true;
 
     }
 

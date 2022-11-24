@@ -12,7 +12,7 @@ public class CloseAction extends Action {
     }
 
     @Override
-    public void execute(Player player) {
+    public void execute( Player player ) {
 
         player.closeInventory();
 
