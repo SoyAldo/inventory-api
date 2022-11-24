@@ -8,6 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.kayteam.actionapi.ActionManager;
 import org.kayteam.actionapi.Actions;
 import org.kayteam.inventoryapi.actions.CloseExpansion;
+import org.kayteam.inventoryapi.actions.OpenGuiExpansion;
 import org.kayteam.inventoryapi.listeners.InventoryClickListener;
 import org.kayteam.inventoryapi.listeners.InventoryCloseListener;
 import org.kayteam.inventoryapi.listeners.PlayerJoinListener;
@@ -104,6 +105,7 @@ public class InventoryManager {
 
         // Actions
         actionManager.addActionExpansion( new CloseExpansion() );
+        actionManager.addActionExpansion( new OpenGuiExpansion( this ) );
 
         // Listeners
         javaPlugin.getServer().getPluginManager().registerEvents( new InventoryClickListener( this ) , javaPlugin);
