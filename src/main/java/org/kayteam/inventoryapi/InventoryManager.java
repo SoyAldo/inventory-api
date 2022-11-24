@@ -25,11 +25,13 @@ import java.util.*;
 public class InventoryManager {
 
     private final HashMap< String , Inventory > registeredInventories = new HashMap<>();
+    private final List<String> registeredTitles = new ArrayList<>();
     private final HashMap< UUID , InventoryView > openedInventories = new HashMap<>();
     private final HashMap< String , Pagination > paginations = new HashMap<>();
     private final RequirementManager requirementManager;
     private final ActionManager actionManager;
     private final JavaPlugin javaPlugin;
+
 
     public InventoryManager( JavaPlugin javaPlugin ) {
 
@@ -179,6 +181,10 @@ public class InventoryManager {
 
         registeredInventories.put( inventory.getName() , inventory );
 
+    }
+
+    public List<String> getRegisteredTitles() {
+        return registeredTitles;
     }
 
     /**

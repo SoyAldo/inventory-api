@@ -497,6 +497,12 @@ public class InventoryView {
 
         inventoryManager.addOpenedInventory( this );
 
+        if ( ! inventoryManager.getRegisteredTitles().contains( realTitle ) ) {
+
+            inventoryManager.getRegisteredTitles().add( realTitle );
+
+        }
+
     }
 
     public void reloadItems() {
